@@ -37,7 +37,7 @@ fn decode_string(value: &str) -> DecodeResult {
 fn decode_integer(value: &str) -> DecodeResult {
     let e_index = value.find('e').ok_or(DecodeError)?;
     let integer = &value[1..e_index];
-    let integer: i32 = integer.parse()?;
+    let integer: isize = integer.parse()?;
 
     Ok(serde_json::Value::Number(integer.into()))
 }
