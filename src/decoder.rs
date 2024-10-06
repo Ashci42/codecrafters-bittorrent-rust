@@ -27,18 +27,15 @@ impl<'v> Decoder<'v> {
             Some(first_char) if first_char.is_ascii_digit() => self.decode_string(),
             Some('i') => self.decode_integer(),
             Some('l') => self.decode_list(),
+            Some('d') => self.decode_dictionary(),
             _ => Err(DecodeError),
         }
     }
 
     fn decode_string(&mut self) -> DecodeResult {
-        let (s_length, remainder) = self.value.split_once(':').ok_or(DecodeError)?;
-        let s_length: usize = s_length.parse()?;
-        let string = &remainder[..s_length];
+        let string = self.decode_string_raw()?;
 
-        self.value = &remainder[s_length..];
-
-        Ok(serde_json::Value::String(string.into()))
+        Ok(serde_json::Value::String(string))
     }
 
     fn decode_integer(&mut self) -> DecodeResult {
@@ -52,20 +49,49 @@ impl<'v> Decoder<'v> {
     }
 
     fn decode_list(&mut self) -> DecodeResult {
-        self.value = &self.value[1..];
+        self.remove_first_char();
         let mut list: Vec<serde_json::Value> = vec![];
         let mut first_char = self.first_char().ok_or(DecodeError)?;
         while first_char != 'e' {
-            let json_value = self.decode()?;
-            list.push(json_value);
+            let value = self.decode()?;
+            list.push(value);
             first_char = self.first_char().ok_or(DecodeError)?;
         }
-        self.value = &self.value[1..];
+        self.remove_first_char();
 
         Ok(serde_json::Value::Array(list))
     }
 
     fn first_char(&self) -> Option<char> {
         self.value.chars().next()
+    }
+
+    fn decode_dictionary(&mut self) -> DecodeResult {
+        self.remove_first_char();
+        let mut dictionary = serde_json::Map::new();
+        let mut first_char = self.first_char().ok_or(DecodeError)?;
+        while first_char != 'e' {
+            let key = self.decode_string_raw()?;
+            let value = self.decode()?;
+            dictionary.insert(key, value);
+            first_char = self.first_char().ok_or(DecodeError)?;
+        }
+        self.remove_first_char();
+
+        Ok(serde_json::Value::Object(dictionary))
+    }
+
+    fn decode_string_raw(&mut self) -> Result<String, DecodeError> {
+        let (s_length, remainder) = self.value.split_once(':').ok_or(DecodeError)?;
+        let s_length: usize = s_length.parse()?;
+        let string = &remainder[..s_length];
+
+        self.value = &remainder[s_length..];
+
+        Ok(string.to_string())
+    }
+
+    fn remove_first_char(&mut self) {
+        self.value = &self.value[1..];
     }
 }
