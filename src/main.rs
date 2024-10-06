@@ -1,3 +1,5 @@
+use decoder::Decoder;
+
 mod args;
 mod decoder;
 
@@ -9,6 +11,7 @@ fn main() {
 }
 
 fn run_decode(value: String) {
-    let decoded_value = decoder::decode(&value).expect("Failed to decode");
+    let mut decoder = Decoder::new(&value);
+    let decoded_value = decoder.decode().expect("Failed to decode");
     println!("{}", decoded_value);
 }
