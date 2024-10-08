@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
@@ -15,9 +17,15 @@ impl Args {
 #[derive(Subcommand)]
 pub enum Command {
     Decode(DecodeArgs),
+    Info(InfoArgs),
 }
 
 #[derive(Parser)]
 pub struct DecodeArgs {
     pub value: String,
+}
+
+#[derive(Parser)]
+pub struct InfoArgs {
+    pub path: PathBuf,
 }
