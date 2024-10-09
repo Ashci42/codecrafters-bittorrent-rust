@@ -26,4 +26,5 @@ fn run_info(path: PathBuf) {
     let torrent_file: TorrentFile =
         serde_bencode::from_bytes(&torrent_file_contents).expect("Cannot parse torrent file");
     torrent_file.print_info();
+    torrent_file.print_info_hash();
 }
