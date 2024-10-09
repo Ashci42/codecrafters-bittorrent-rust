@@ -27,4 +27,5 @@ fn run_info(path: PathBuf) {
         serde_bencode::from_bytes(&torrent_file_contents).expect("Cannot parse torrent file");
     torrent_file.print_info();
     torrent_file.print_info_hash();
+    torrent_file.print_pieces();
 }
