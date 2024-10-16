@@ -18,6 +18,7 @@ impl Args {
 pub enum Command {
     Decode(DecodeArgs),
     Info(InfoArgs),
+    Peers(PeersArgs),
 }
 
 #[derive(Parser)]
@@ -27,5 +28,10 @@ pub struct DecodeArgs {
 
 #[derive(Parser)]
 pub struct InfoArgs {
+    pub path: PathBuf,
+}
+
+#[derive(Parser)]
+pub struct PeersArgs {
     pub path: PathBuf,
 }
