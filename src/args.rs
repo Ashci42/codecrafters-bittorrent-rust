@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{net::SocketAddrV4, path::PathBuf};
 
 use clap::{Parser, Subcommand};
 
@@ -19,6 +19,7 @@ pub enum Command {
     Decode(DecodeArgs),
     Info(InfoArgs),
     Peers(PeersArgs),
+    Handshake(HandshakeArgs),
 }
 
 #[derive(Parser)]
@@ -34,4 +35,10 @@ pub struct InfoArgs {
 #[derive(Parser)]
 pub struct PeersArgs {
     pub path: PathBuf,
+}
+
+#[derive(Parser)]
+pub struct HandshakeArgs {
+    pub path: PathBuf,
+    pub peer: SocketAddrV4,
 }

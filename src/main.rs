@@ -1,12 +1,16 @@
 mod args;
+mod config;
 mod decoder;
+mod peer_handshake;
+mod torrent;
 mod torrent_file;
 mod tracker;
 mod url;
 
-use std::path::Path;
+use std::{net::SocketAddrV4, path::Path};
 
 use decoder::Decoder;
+use peer_handshake::PeerHandshake;
 use torrent_file::TorrentFile;
 use tracker::Tracker;
 
@@ -16,6 +20,9 @@ fn main() {
         args::Command::Decode(decode_args) => run_decode(&decode_args.value),
         args::Command::Info(info_args) => run_info(&info_args.path),
         args::Command::Peers(peers_args) => run_peers(&peers_args.path),
+        args::Command::Handshake(handshake_args) => {
+            run_handshake(&handshake_args.path, &handshake_args.peer)
+        }
     }
 }
 
@@ -37,4 +44,10 @@ fn run_peers(path: &Path) {
     let tracker = Tracker::new(&torrent_file);
     let tracker_response = tracker.make_request().expect("Request failed");
     tracker_response.print_peers();
+}
+
+fn run_handshake(path: &Path, peer: &SocketAddrV4) {
+    let torrent_file = TorrentFile::try_from_file(path).expect("Failed to create torrent file");
+    let peer_handshake = PeerHandshake::new(&torrent_file);
+    peer_handshake.establish(peer).unwrap();
 }

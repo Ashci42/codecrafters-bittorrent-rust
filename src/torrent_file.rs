@@ -3,7 +3,7 @@ use std::path::Path;
 use serde::{de::Visitor, Deserialize, Serialize};
 use sha1::{Digest, Sha1};
 
-use crate::tracker::Torrent;
+use crate::torrent::Torrent;
 
 #[derive(Deserialize)]
 pub struct TorrentFile {

@@ -2,13 +2,7 @@ use std::net::{Ipv4Addr, SocketAddrV4};
 
 use serde::{de::Visitor, Deserialize, Serialize};
 
-use crate::url;
-
-pub trait Torrent {
-    fn tracker_url(&self) -> &str;
-    fn info_hash(&self) -> [u8; 20];
-    fn left(&self) -> usize;
-}
+use crate::{config::PEER_ID, torrent::Torrent, url};
 
 pub struct Tracker<'t, T>
 where
@@ -89,7 +83,7 @@ impl TrackerResponse {
 struct TrackerQuery {
     #[serde(skip_serializing)]
     info_hash: String,
-    peer_id: String,
+    peer_id: &'static str,
     port: u16,
     uploaded: u32,
     downloaded: u32,
@@ -101,7 +95,7 @@ impl TrackerQuery {
     fn new(info_hash: String, left: usize) -> Self {
         Self {
             info_hash,
-            peer_id: String::from("20202020202020202020"),
+            peer_id: PEER_ID,
             port: 6881,
             uploaded: 0,
             downloaded: 0,
